@@ -23,15 +23,50 @@
  *
  */
 
-//#include "uart.h"
 #include "stdint.h"
+#include "stdbool.h"
+#include "stdio.h"
+#include "stdlib.h"
+
 #include "HalUart.h"
+#include "HalTimer.h"
 #include "mbox.h"
 
-void main()
+static void Hw_init(void)
 {
     // set up serial console
     Hal_uart_init();
+    Hal_timer_init();
+}
+static void Printf_test(void)
+{
+    char* str = "printf pointer test";
+    char* nullptr = 0;
+    uint32_t i = 5;
+    uint32_t* sysctrl0 = (uint32_t*)0x10001000;
+
+    debug_printf("%s\n", "Hello printf");
+    debug_printf("output string pointer: %s\n", str);
+    debug_printf("%s is null pointer, %u number\n", nullptr, 10);
+    debug_printf("%u = 5\n", i);
+    debug_printf("dec=%u hex=%x\n", 0xff, 0xff);
+    debug_printf("print zero %u\n", 0);
+    debug_printf("SYSCTRL0 %x\n", *sysctrl0);
+}
+
+static void Timer_test(void)
+{
+    for(uint32_t i = 0; i < 5 ; i++)
+    {
+        debug_printf("current count : %u\n", Hal_timer_get_1ms_counter());
+        delay(1000);
+    }
+}
+
+void main()
+{
+
+    Hw_init();
     
     // get the board's unique serial number with a mailbox call
     mbox[0] = 8*4;                  // length of the message
@@ -47,16 +82,21 @@ void main()
 
     // send the message to the GPU and receive answer
     if (mbox_call(MBOX_CH_PROP)) {
-        Hal_uart_put_char("1");
+        Hal_uart_put_char('G');
         uart_hex(mbox[6]);
         uart_hex(mbox[5]);
-        Hal_uart_put_char("\n");
+        Hal_uart_put_char('\n');
     } else {
-        Hal_uart_put_char("1");
+        Hal_uart_put_char('N');
     }
+    putstr("Hello World!\n");
+    Printf_test();
+    Timer_test();
 
-    // echo everything back
+// echo everything back
     while(1) {
         uart_send(uart_getc());
     }
+
+
 }

@@ -19,14 +19,14 @@ ASM_SRCS = $(wildcard ./boot/$(TARGET)/*.S)
 ASM_OBJS = $(patsubst ./boot/$(TARGET)/%.S, $(OUTDIR)/%.os, $(ASM_SRCS))
 
 VPATH = boot/$(TARGET) 			\
-        hal/$(TARGET)
-#        lib				\
-	lib/$(ARM_ARCH)		\
+        hal/$(TARGET) \
+        lib			
+#	lib/$(ARM_ARCH)		\
         kernel
 
 C_SRCS  = $(notdir $(wildcard ./boot/$(TARGET)/*.c))
 C_SRCS += $(notdir $(wildcard ./hal/$(TARGET)/*.c))
-#C_SRCS += $(notdir $(wildcard ./lib/*.c))
+C_SRCS += $(notdir $(wildcard ./lib/*.c))
 #C_SRCS += $(notdir $(wildcard ./lib/$(ARM_ARCH)/*.c))
 #C_SRCS += $(notdir $(wildcard ./kernel/*.c))
 C_OBJS = $(patsubst %.c, $(OUTDIR)/%.o, $(C_SRCS))
@@ -34,9 +34,10 @@ C_OBJS = $(patsubst %.c, $(OUTDIR)/%.o, $(C_SRCS))
 INC_DIRS  = -I boot/$(TARGET)	\
             -I include 			\
             -I hal	   			\
-            -I hal/$(TARGET)
+            -I hal/$(TARGET)    \
+            -I lib      
 
-CFLAGS =  -c -g 
+CFLAGS =  -c -g  -nostartfiles -nostdlib -nodefaultlibs -static -lgcc 
 
 LDFLAGS =  -nostartfiles -nostdlib -nodefaultlibs -static -lgcc 
 

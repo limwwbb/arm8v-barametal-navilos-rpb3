@@ -24,9 +24,19 @@
  */
 
 #include "gpio.h"
+#include "stdint.h"
+#include "HalTimer.h"
+
 
 #define SYSTMR_LO        ((volatile unsigned int*)(MMIO_BASE+0x00003004))
 #define SYSTMR_HI        ((volatile unsigned int*)(MMIO_BASE+0x00003008))
+
+static uint32_t sInternal_1ms_counter;
+
+void Hal_timer_init(void)
+{
+    sInternal_1ms_counter = 0;
+}
 
 /**
  * Wait N CPU cycles (ARM CPU only)
@@ -80,3 +90,14 @@ void wait_msec_st(unsigned int n)
     // system timer, and returning constant zero would mean infinite loop
     if(t) while(get_system_timer()-t < n);
 }
+
+uint32_t Hal_timer_get_1ms_counter(void)
+{
+//    if(get_system_timer()!=0) 
+  //      wait_msec_st(1000000);
+    sInternal_1ms_counter++;
+
+    return sInternal_1ms_counter;
+}
+
+
