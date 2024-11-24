@@ -30,6 +30,7 @@
 
 #include "HalUart.h"
 #include "HalTimer.h"
+#include "HalSystem.h"
 #include "mbox.h"
 
 static void Hw_init(void)
@@ -68,6 +69,9 @@ void main()
 
     Hw_init();
     
+    unsigned int el = get_current_el(); 
+    debug_printf("Current Exception Level: EL%d\n", el);
+
     // get the board's unique serial number with a mailbox call
     mbox[0] = 8*4;                  // length of the message
     mbox[1] = MBOX_REQUEST;         // this is a request message

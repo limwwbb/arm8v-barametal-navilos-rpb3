@@ -28,6 +28,10 @@
 .global _start
 
 _start:
+    // Read the CurrentEL register to determine the current exception level
+    mrs x0, CurrentEL
+    // Extract the exception level bits [3:2] and shift them right by 2
+    lsr x0, x0, #2
     // read cpu id, stop slave cores
     mrs     x1, mpidr_el1
     and     x1, x1, #3

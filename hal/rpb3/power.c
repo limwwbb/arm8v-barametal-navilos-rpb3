@@ -23,6 +23,8 @@
  *
  */
 
+
+#include "HalSystem.h"
 #include "gpio.h"
 #include "mbox.h"
 #include "delays.h"
@@ -80,4 +82,11 @@ void reset()
     *PM_RSTS = PM_WDOG_MAGIC | r;   // boot from partition 0
     *PM_WDOG = PM_WDOG_MAGIC | 10;
     *PM_RSTC = PM_WDOG_MAGIC | PM_RSTC_FULLRST;
+}
+
+unsigned int get_current_el() {
+    unsigned int el;
+    asm volatile ("mrs %0, CurrentEL" : "=r"(el));
+    el = (el >> 2) & 0x3;  // Extract the exception level bits [3:2]
+    return el;
 }
